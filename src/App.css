@@ -29,6 +29,10 @@
     border-left: 1px solid #000;
 }
 
+.table__td input {
+    width: 100%;
+}
+
 .table__buttons {
     position: absolute;
     display: flex;

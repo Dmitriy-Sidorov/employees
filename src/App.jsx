@@ -12,46 +12,112 @@ class App extends Component {
     }
 }
 
+let value = 0;
+
 class Table extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            head_names: ['Имя', 'Фамилия', 'Возраст', 'Работ', 'Опыт'],
+            rows: [],
+            value: [],
+            input: false
+        };
+    }
+
+    handleChange = (event) => {
+        this.setState({value: event.target.value});
+    };
+
+    genHead = () => {
+        let head = this.state.head_names;
+        return head.map((th, i) => {
+            return (
+                <TD key={'th' + i} name={th}/>
+            );
+        });
+    };
+
+    genRow = () => {
+        const {rows, input, value} = this.state;
+        let val = value;
+        return rows.map((tr, i) => {
+            let row = tr.map((td, j) => {
+                val = td;
+                return (
+                    <div onDoubleClick={this.editTD} key={'td' + i + '_' + j} className="table__td"
+                         name={val}>{(input && <input value={val} onChange={this.handleChange}/>) || val
+                    }
+                    </div>
+                );
+            });
+
+            return (
+                <div key={'tr' + i} id={i} className="table__row">
+                    {row}
+                    <div className="table__buttons">
+                        <Buttons onClick={this.editTD} color="primary" name="edit"/>
+                        <Button onClick={this.remove.bind(this.props.id)} color="danger" name="remove">remove</Button>
+                    </div>
+                </div>
+            )
+        });
+    };
+
+    editTD = () => {
+        const {input} = this.state;
+
+        this.setState({input: !input});
+    };
+
+    addRow = () => {
+        let newRow = this.state.rows;
+        let countColumn = this.state.head_names.length;
+        let td = [];
+
+        for (let i = 0; i < countColumn; i++) {
+            //let value = this.state.value;
+
+            td.push(value);
+            value++
+        }
+        newRow.push(td);
+        this.setState({rows: newRow});
+    };
+
+    remove = (i) => {
+        const {rows} = this.state;
+        rows.splice(i, 1);
+        console.log(i);
+
+        this.setState({rows: rows});
+    };
+
     render() {
         return (
             <div className="table">
                 <div>
-
                     <div className="table--header table__row">
-                        <div className="table__td">Имя</div>
-                        <div className="table__td">Фамилия</div>
-                        <div className="table__td">Возраст</div>
-                        <div className="table__td">Работа</div>
-                        <div className="table__td">Опыт</div>
+                        {this.genHead()}
                     </div>
-                    <div className="table__row">
-                        <div className="table__td">Иван</div>
-                        <div className="table__td">Иванов</div>
-                        <div className="table__td">33</div>
-                        <div className="table__td">Хирург</div>
-                        <div className="table__td">6</div>
-                        <div className="table__buttons">
-                            <Button outline color="primary">edit</Button>
-                            <Button outline color="danger">remove</Button>
-                        </div>
-                    </div>
-                    <div className="table__row">
-                        <div className="table__td">Петр</div>
-                        <div className="table__td">Петров</div>
-                        <div className="table__td">23</div>
-                        <div className="table__td">IT</div>
-                        <div className="table__td">1</div>
-                        <div className="table__buttons">
-                            <Button outline color="primary">edit</Button>
-                            <Button outline color="danger">remove</Button>
-                        </div>
-                    </div>
+                    {this.genRow()}
                     <div className="table__row mt-1">
-                        <Buttons type="outline" color="secondary" name="Add" className="col"/>
+                        <Buttons onClick={this.addRow.bind(this)}
+                                 type="outline" color="secondary" name="Add"
+                                 className="col"/>
                     </div>
                 </div>
             </div>
+        );
+    }
+}
+
+class TD extends Component {
+    render() {
+        return (
+            <div className="table__td">{this.props.name}</div>
         );
     }
 }
@@ -60,10 +126,12 @@ class Buttons extends Component {
 
     render() {
         return (
-            <Button _props={this.props.type} color={this.props.color}
+            <Button onClick={this.props.onClick}
+                    outline color={this.props.color}
                     className={this.props.className}>{this.props.name}</Button>
         );
     }
 }
+
 
 export default App;
